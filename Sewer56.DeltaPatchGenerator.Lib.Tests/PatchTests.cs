@@ -1,17 +1,22 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using Sewer56.DeltaPatchGenerator.Lib;
+using Sewer56.DeltaPatchGenerator.Lib.Model;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Sewer56.DeltaPatchGenerator.Tests
 {
     public class PatchTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         public string PatchFolder = Path.Combine(Assets.TempFolder, "Patch");
         public string ResultFolder = Path.Combine(Assets.TempFolder, "Result");
 
-        public PatchTests()
+        public PatchTests(ITestOutputHelper testOutputHelper)
         {
+            _testOutputHelper = testOutputHelper;
             try
             {
                 Directory.Delete(Assets.TempFolder, true);
@@ -45,6 +50,20 @@ namespace Sewer56.DeltaPatchGenerator.Tests
 
             // Apply Patch
             Patch.Apply(patch, Assets.ManyFileFolderOriginal, ResultFolder);
+
+            // Verify Files
+            Assert.True(HashSet.Verify(hashes, ResultFolder, out var missingFiles, out var hashMismatches));
+        }
+
+        [Fact]
+        public void PatchAddsMissingFiles()
+        {
+            // Make Hashes and Patch
+            var hashes = HashSet.Generate(Assets.AddMissingFileFolderTarget);
+            var patch  = Patch.Generate(Assets.AddMissingFileFolderOriginal, Assets.AddMissingFileFolderTarget, PatchFolder);
+
+            // Apply Patch
+            Patch.Apply(patch, Assets.AddMissingFileFolderOriginal, ResultFolder);
 
             // Verify Files
             Assert.True(HashSet.Verify(hashes, ResultFolder, out var missingFiles, out var hashMismatches));

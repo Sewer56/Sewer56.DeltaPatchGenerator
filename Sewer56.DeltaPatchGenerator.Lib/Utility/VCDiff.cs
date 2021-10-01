@@ -11,7 +11,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
     /// </summary>
     public class VCDiff
     {
-        private const int MaxBufferSizeMib = 64;
+        public const int EncodeBufMiB = 16;
 
         /// <summary>
         /// Applies an vcdiff patch to a file.
@@ -44,11 +44,11 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
             ThrowHelpers.ThrowIfNullOrEmpty(options.Output, nameof(options.Output));
 
             // Create delta.
-            using FileStream output = new FileStream(options.Output, FileMode.Create, FileAccess.Write);
-            using FileStream source = new FileStream(options.Source, FileMode.Open, FileAccess.Read);
-            using FileStream target = new FileStream(options.Target, FileMode.Open, FileAccess.Read);
+            using FileStream output = new FileStream(options.Output, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            using FileStream source = new FileStream(options.Source, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using FileStream target = new FileStream(options.Target, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-            using var coder = new VcEncoder(source, target, output, MaxBufferSizeMib);
+            using var coder = new VcEncoder(source, target, output, EncodeBufMiB, 32);
             var result = coder.Encode();
             if (result != VCDiffResult.SUCCESS)
                 throw new Exception("Failed to perform VCDiff Encoding.");

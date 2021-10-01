@@ -63,7 +63,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib
                 if (!TryFindPatch(patches, sourceFile, relativePath, out var patch)) 
                     continue;
 
-                var patchFilePath = Paths.AppendRelativePath(relativePath, patch.Directory);
+                var patchFilePath  = Paths.AppendRelativePath(relativePath, patch.Directory);
                 var outputFilePath = Paths.AppendRelativePath(relativePath, outputFolder);
                 createdFolders.CreateFolderIfNotCreated(Path.GetDirectoryName(outputFilePath));
 
@@ -73,6 +73,17 @@ namespace Sewer56.DeltaPatchGenerator.Lib
                     Patch = patchFilePath,
                     Output = outputFilePath
                 });
+            }
+
+            // Add extra files from patch.
+            foreach (var patch in patches)
+            {
+                foreach (var addedFileRelativePath in patch.AddedFilesSet)
+                {
+                    var patchFilePath  = Paths.AppendRelativePath(addedFileRelativePath, patch.Directory);
+                    var outputFilePath = Paths.AppendRelativePath(addedFileRelativePath, outputFolder);
+                    File.Copy(patchFilePath, outputFilePath, true);
+                }
             }
 
             reportProgress?.Invoke("Done", 1);
@@ -99,17 +110,25 @@ namespace Sewer56.DeltaPatchGenerator.Lib
                 var src = sourceFiles[x];
                 var relativePath = Paths.GetRelativePath(src, sourceFolder);
                 var destinationPath = Paths.AppendRelativePath(relativePath, targetFolder);
+                string outputPath;
 
                 reportProgress?.Invoke(relativePath, (double) x / sourceFiles.Length);
                 if (!File.Exists(destinationPath))
+                {
+                    // Add missing file.
+                    outputPath = Paths.AppendRelativePath(relativePath, outputFolder);
+                    createdFolders.CreateFolderIfNotCreated(Path.GetDirectoryName(outputPath));
+                    patch.AddNewFile(relativePath);
+                    File.Copy(src, outputPath, true);
                     continue;
+                }
 
                 ulong hashSource = Hashing.CalculateHash(src);
                 ulong hashDestination = Hashing.CalculateHash(destinationPath);
                 if (hashSource == hashDestination)
                     continue;
 
-                var outputPath = Paths.AppendRelativePath(relativePath, outputFolder);
+                outputPath = Paths.AppendRelativePath(relativePath, outputFolder);
                 createdFolders.CreateFolderIfNotCreated(Path.GetDirectoryName(outputPath));
                 Utility.VCDiff.Compress(new CompressOptions()
                 {
@@ -118,7 +137,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib
                     Output = outputPath
                 });
 
-                patch.Add(hashSource, relativePath);
+                patch.AddPatchFile(hashSource, relativePath);
             }
 
             reportProgress?.Invoke("Done", 1);
@@ -146,7 +165,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib
                 hash ??= Hashing.CalculateHash(sourceFilePath);
 
                 // Check if file hash is present.
-                if (!patch.HashToPatchDictionary.TryGetValue(hash.Value, out var expectedRelativePath)) 
+                if (!patch.HashToPatchDictionary.TryGetValue(hash.Value, out var expectedRelativePath))
                     continue;
 
                 patchData = patch;

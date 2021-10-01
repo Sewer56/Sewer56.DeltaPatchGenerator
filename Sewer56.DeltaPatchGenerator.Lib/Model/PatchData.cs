@@ -16,6 +16,11 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
         public Dictionary<ulong, string> HashToPatchDictionary { get; set; } = new Dictionary<ulong, string>();
 
         /// <summary>
+        /// Contains a set of all files to be added to patch from old to new.
+        /// </summary>
+        public HashSet<string> AddedFilesSet { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
         /// Contains a set of all file paths available in this patch.
         /// </summary>
         [JsonIgnore]
@@ -58,9 +63,15 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
             File.WriteAllText(outputFilePath, JsonSerializer.Serialize(this));
         }
 
-        public void Add(ulong hash, string path)
+        public void AddPatchFile(ulong hash, string path)
         {
             HashToPatchDictionary[hash] = path;
+            FilePathSet.Add(path);
+        }
+
+        public void AddNewFile(string path)
+        {
+            AddedFilesSet.Add(path);
             FilePathSet.Add(path);
         }
 
@@ -68,6 +79,9 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
         {
             foreach (var item in HashToPatchDictionary) 
                 FilePathSet.Add(item.Value);
+
+            foreach (var item in AddedFilesSet)
+                FilePathSet.Add(item);
         }
     }
 }

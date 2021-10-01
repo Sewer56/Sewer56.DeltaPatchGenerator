@@ -1,0 +1,3 @@
+[submodule "Submodules/vcdiff"]
+	path = Submodules/vcdiff
+	url = https://github.com/SnowflakePowered/vcdiff
