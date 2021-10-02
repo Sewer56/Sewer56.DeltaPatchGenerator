@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Sewer56.DeltaPatchGenerator.Lib;
 using Sewer56.DeltaPatchGenerator.Lib.Model;
+using Sewer56.DeltaPatchGenerator.Lib.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -63,10 +64,29 @@ namespace Sewer56.DeltaPatchGenerator.Tests
             var patch  = Patch.Generate(Assets.AddMissingFileFolderOriginal, Assets.AddMissingFileFolderTarget, PatchFolder);
 
             // Apply Patch
-            Patch.Apply(patch, Assets.AddMissingFileFolderOriginal, ResultFolder);
+            Patch.Apply(patch, Assets.AddMissingFileFolderOriginal, ResultFolder, null, true);
 
             // Verify Files
             Assert.True(HashSet.Verify(hashes, ResultFolder, out var missingFiles, out var hashMismatches));
+        }
+
+        [Fact]
+        public void PatchRemovesExtraFiles()
+        {
+            // Make Hashes and Patch
+            var hashes = HashSet.Generate(Assets.AddMissingFileFolderOriginal);
+
+            // Apply Patch
+            IOEx.CopyDirectory(Assets.AddMissingFileFolderTarget, ResultFolder);
+
+            // Verify Files
+            Assert.True(HashSet.Verify(hashes, ResultFolder, out var missingFiles, out var hashMismatches));
+
+            // Remove extra files.
+            int GetFileCount() => Directory.GetFiles(ResultFolder, "*.*", SearchOption.AllDirectories).Length;
+            var fileCount = GetFileCount();
+            HashSet.Cleanup(hashes, ResultFolder);
+            Assert.Equal(fileCount - 1, GetFileCount());
         }
 
         [Fact]

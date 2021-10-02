@@ -26,11 +26,7 @@ namespace Sewer56.DeltaPatchGenerator.Tests
         public static readonly string AddMissingFileFolder = Path.Combine(AssetsFolder, "Add Missing File Test");
         public static readonly string AddMissingFileFolderOriginal = Path.Combine(AddMissingFileFolder, "Original");
         public static readonly string AddMissingFileFolderTarget = Path.Combine(AddMissingFileFolder, "New");
-
-        public static readonly string BigFileFolder = Path.Combine(AssetsFolder, "Big File Test");
-        public static readonly string BigFileFolderOriginal = Path.Combine(BigFileFolder, "Original");
-        public static readonly string BigFileFolderTarget = Path.Combine(BigFileFolder, "New");
-
+        
         public static readonly string TempFolder = Path.Combine(Paths.ProgramFolder, "Temp");
 
         static Assets()

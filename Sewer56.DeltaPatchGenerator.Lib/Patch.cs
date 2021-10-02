@@ -19,9 +19,10 @@ namespace Sewer56.DeltaPatchGenerator.Lib
         /// <param name="sourceFolder">The folder to be patched.</param>
         /// <param name="outputFolder">The folder to output the result to.</param>
         /// <param name="reportProgress">Function that receives information on the current progress.</param>
-        public static void Apply(PatchData patch, string sourceFolder, string outputFolder, Events.ProgressCallback reportProgress = null)
+        /// <param name="copySourceToOutput">Copies the source files to the output folder. If false, only patched files will show in output folder.</param>
+        public static void Apply(PatchData patch, string sourceFolder, string outputFolder, Events.ProgressCallback reportProgress = null, bool copySourceToOutput = false)
         {
-            Apply(new [] { patch }, sourceFolder, outputFolder, reportProgress);
+            Apply(new [] { patch }, sourceFolder, outputFolder, reportProgress, copySourceToOutput);
         }
 
         /// <summary>
@@ -31,20 +32,23 @@ namespace Sewer56.DeltaPatchGenerator.Lib
         /// <param name="sourceFolder">The folder to be patched.</param>
         /// <param name="outputFolder">The folder to output the result to.</param>
         /// <param name="reportProgress">Function that receives information on the current progress.</param>
-        public static void Apply(Span<PatchData> patches, string sourceFolder, string outputFolder, Events.ProgressCallback reportProgress = null)
+        /// <param name="copySourceToOutput">Copies the source files to the output folder. If false, only patched files will show in output folder.</param>
+        public static void Apply(Span<PatchData> patches, string sourceFolder, string outputFolder, Events.ProgressCallback reportProgress = null, bool copySourceToOutput = false)
         {
             bool extractToSource   = sourceFolder.Equals(outputFolder, StringComparison.OrdinalIgnoreCase);
             string actualOutFolder = extractToSource ? Paths.TempFolder : outputFolder;
 
             if (extractToSource)
-                IOEx.TryEmptyDirectory(Paths.TempFolder);
+                IOEx.TryEmptyDirectory(actualOutFolder);
+            else if (copySourceToOutput)
+                IOEx.CopyDirectory(sourceFolder, actualOutFolder);
 
             Apply_Internal(patches, sourceFolder, actualOutFolder, reportProgress);
 
             if (extractToSource)
             {
                 IOEx.MoveDirectory(actualOutFolder, sourceFolder);
-                IOEx.TryDeleteDirectory(Paths.TempFolder);
+                IOEx.TryDeleteDirectory(actualOutFolder);
             }
         }
         
@@ -82,6 +86,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib
                 {
                     var patchFilePath  = Paths.AppendRelativePath(addedFileRelativePath, patch.Directory);
                     var outputFilePath = Paths.AppendRelativePath(addedFileRelativePath, outputFolder);
+                    createdFolders.CreateFolderIfNotCreated(Path.GetDirectoryName(outputFilePath));
                     File.Copy(patchFilePath, outputFilePath, true);
                 }
             }
@@ -105,6 +110,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib
             Directory.CreateDirectory(outputFolder);
             var createdFolders = new HashSet<string>();
 
+            // Add patches for mismatching files.
             for (var x = 0; x < sourceFiles.Length; x++)
             {
                 var src = sourceFiles[x];
@@ -114,14 +120,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib
 
                 reportProgress?.Invoke(relativePath, (double) x / sourceFiles.Length);
                 if (!File.Exists(destinationPath))
-                {
-                    // Add missing file.
-                    outputPath = Paths.AppendRelativePath(relativePath, outputFolder);
-                    createdFolders.CreateFolderIfNotCreated(Path.GetDirectoryName(outputPath));
-                    patch.AddNewFile(relativePath);
-                    File.Copy(src, outputPath, true);
                     continue;
-                }
 
                 ulong hashSource = Hashing.CalculateHash(src);
                 ulong hashDestination = Hashing.CalculateHash(destinationPath);
@@ -140,6 +139,22 @@ namespace Sewer56.DeltaPatchGenerator.Lib
                 patch.AddPatchFile(hashSource, relativePath);
             }
 
+            // Add missing files.
+            var targetFiles = Directory.GetFiles(targetFolder, "*.*", SearchOption.AllDirectories);
+            foreach (var targetFile in targetFiles)
+            {
+                var relativePath = Paths.GetRelativePath(targetFile, targetFolder);
+                var sourcePath   = Paths.AppendRelativePath(relativePath, sourceFolder);
+                if (File.Exists(sourcePath)) 
+                    continue;
+
+                // Add missing file.
+                var outputPath = Paths.AppendRelativePath(relativePath, outputFolder);
+                createdFolders.CreateFolderIfNotCreated(Path.GetDirectoryName(outputPath));
+                patch.AddNewFile(relativePath);
+                File.Copy(targetFile, outputPath, true);
+            }
+            
             reportProgress?.Invoke("Done", 1);
             patch.Directory = outputFolder;
             patch.ToDirectory(outputFolder, out _);

@@ -20,13 +20,24 @@ namespace Sewer56.DeltaPatchGenerator.Lib
         /// <param name="sourceFolder">The folder to be cleaned.</param>
         public static void Cleanup(FileHashSet fileSet, string sourceFolder)
         {
+            Cleanup(fileSet, sourceFolder, s => true);
+        }
+
+        /// <summary>
+        /// Removes any files in the hash set not present in the target folder.
+        /// </summary>
+        /// <param name="fileSet">The set of files to use as reference.</param>
+        /// <param name="sourceFolder">The folder to be cleaned.</param>
+        /// <param name="shouldDeleteFile">Allows you to override whether the file should be deleted.</param>
+        public static void Cleanup(FileHashSet fileSet, string sourceFolder, Events.ShouldDeleteFileCallback shouldDeleteFile)
+        {
             var allFiles = Directory.GetFiles(sourceFolder, "*.*", SearchOption.AllDirectories);
             var hashSet  = BuildHashSet(fileSet);
 
             foreach (var file in allFiles)
             {
                 var relativePath = Paths.GetRelativePath(file, sourceFolder);
-                if (!hashSet.Contains(relativePath)) 
+                if (!hashSet.Contains(relativePath) && shouldDeleteFile(relativePath)) 
                     File.Delete(file);
             }
         }

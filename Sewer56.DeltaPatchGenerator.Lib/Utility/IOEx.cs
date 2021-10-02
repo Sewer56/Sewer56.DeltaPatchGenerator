@@ -16,6 +16,21 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
         /// <param name="target">The target path.</param>
         public static void MoveDirectory(string source, string target)
         {
+            MoveDirectory(source, target, (x, y) => File.Move(x, y, true));
+        }
+
+        /// <summary>
+        /// Copies a directory from a given source path to a target path, overwriting all files.
+        /// </summary>
+        /// <param name="source">The source path.</param>
+        /// <param name="target">The target path.</param>
+        public static void CopyDirectory(string source, string target)
+        {
+            MoveDirectory(source, target, (x, y) => File.Copy(x, y, true));
+        }
+
+        private static void MoveDirectory(string source, string target, Action<string, string> moveDirectoryAction)
+        {
             Directory.CreateDirectory(target);
 
             // Get all files in source directory.
@@ -34,7 +49,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
                 if (File.Exists(destFilePath))
                     File.Delete(destFilePath);
 
-                File.Move(sourceFilePath, destFilePath);
+                moveDirectoryAction(sourceFilePath, destFilePath);
             }
 
             // Get all subdirectories in source directory.
@@ -45,7 +60,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
             {
                 var destSubDirName = Path.GetFileName(sourceSubDirPath);
                 var destSubDirPath = Path.Combine(target, destSubDirName);
-                MoveDirectory(sourceSubDirPath, destSubDirPath);
+                MoveDirectory(sourceSubDirPath, destSubDirPath, moveDirectoryAction);
             }
         }
 

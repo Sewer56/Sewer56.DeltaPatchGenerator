@@ -27,7 +27,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
             using FileStream source = new FileStream(options.Source, FileMode.Open, FileAccess.Read);
             using FileStream patch  = new FileStream(options.Patch, FileMode.Open, FileAccess.Read);
 
-            var decoder = new VcDecoder(source, patch, output, int.MaxValue);
+            using var decoder = new VcDecoder(source, patch, output, int.MaxValue);
             var result = decoder.Decode(out var bytesWritten);
             if (result != VCDiffResult.SUCCESS)
                 throw new Exception("Failed to perform VCDiff Decoding.");
