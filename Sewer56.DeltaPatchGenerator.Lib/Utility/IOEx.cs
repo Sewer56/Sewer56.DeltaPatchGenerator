@@ -98,7 +98,16 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
         /// </summary>
         public static void TryDeleteDirectory(string path, bool recursive = true)
         {
-            try { Directory.Delete(path, true); }
+            try { Directory.Delete(path, recursive); }
+            catch (Exception e) { /* Ignored */ }
+        }
+
+        /// <summary>
+        /// Tries to delete a directory, if possible.
+        /// </summary>
+        public static void TryDeleteFile(string path)
+        {
+            try   { File.Delete(path); }
             catch (Exception e) { /* Ignored */ }
         }
 
