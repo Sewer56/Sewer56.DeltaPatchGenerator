@@ -12,7 +12,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
         /// <summary>
         /// The location where the current program is located.
         /// </summary>
-        public static readonly string ProgramFolder = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+        public static readonly string ProgramFolder = Path.GetDirectoryName(new Uri(AppContext.BaseDirectory).LocalPath);
 
         /// <summary>
         /// Location of the temp folder; where working files are stored.
