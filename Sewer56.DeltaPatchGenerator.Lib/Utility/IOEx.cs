@@ -16,7 +16,11 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
         /// <param name="target">The target path.</param>
         public static void MoveDirectory(string source, string target)
         {
-            MoveDirectory(source, target, (x, y) => File.Move(x, y, true));
+            MoveDirectory(source, target, (x, y) =>
+            {
+                File.Copy(x, y, true);
+                File.Delete(x);
+            });
         }
 
         /// <summary>
