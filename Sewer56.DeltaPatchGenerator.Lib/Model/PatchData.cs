@@ -51,8 +51,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
             var path  = Path.Combine(inputFolder, FileName);
             var text  = File.ReadAllText(path);
             var patch = JsonSerializer.Deserialize<PatchData>(text);
-            patch.Directory = inputFolder;
-            patch.PopulatePathSet();
+            patch.Initialize(inputFolder);
 
             return patch;
         }
@@ -75,9 +74,13 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
             FilePathSet.Add(path);
         }
 
-        private void PopulatePathSet()
+        public void Initialize(string inputFolder)
         {
-            foreach (var item in HashToPatchDictionary) 
+            Directory = inputFolder;
+            if (FilePathSet.Count != 0) 
+                return;
+
+            foreach (var item in HashToPatchDictionary)
                 FilePathSet.Add(item.Value);
 
             foreach (var item in AddedFilesSet)
