@@ -101,7 +101,8 @@ namespace Sewer56.DeltaPatchGenerator.Lib
         /// <param name="targetFolder">The target folder.</param>
         /// <param name="outputFolder">The output folder.</param>
         /// <param name="reportProgress">Function that receives information on the current progress.</param>
-        public static PatchData Generate(string sourceFolder, string targetFolder, string outputFolder, Events.ProgressCallback reportProgress = null)
+        /// <param name="writePatchFile">Writes the patch metadata file to the target folder.</param>
+        public static PatchData Generate(string sourceFolder, string targetFolder, string outputFolder, Events.ProgressCallback reportProgress = null, bool writePatchFile = true)
         {
             var patch       = new PatchData();
 
@@ -157,7 +158,9 @@ namespace Sewer56.DeltaPatchGenerator.Lib
             
             reportProgress?.Invoke("Done", 1);
             patch.Directory = outputFolder;
-            patch.ToDirectory(outputFolder, out _);
+            if (writePatchFile)
+                patch.ToDirectory(outputFolder, out _);
+            
             return patch;
         }
 
