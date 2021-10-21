@@ -15,5 +15,12 @@
         /// <param name="relativePath">Relative path of the file to be deleted.</param>
         /// <returns>True to delete file, else false.</returns>
         public delegate bool ShouldDeleteFileCallback(string relativePath);
+
+        /// <summary>
+        /// Allows you to optionally ignore creating a hash for a given file.
+        /// </summary>
+        /// <param name="relativePath">Relative path of the file to hashed.</param>
+        /// <returns>True to not hash the file, else false.</returns>
+        public delegate bool ShouldIgnoreFileCallback(string relativePath);
     }
 }

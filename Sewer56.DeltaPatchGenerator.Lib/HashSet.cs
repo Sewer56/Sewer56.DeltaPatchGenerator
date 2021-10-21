@@ -83,7 +83,8 @@ namespace Sewer56.DeltaPatchGenerator.Lib
         /// </summary>
         /// <param name="sourceFolder">The source folder to create a list of hashes from.</param>
         /// <param name="reportProgress">Function that receives information on the current progress.</param>
-        public static FileHashSet Generate(string sourceFolder, Events.ProgressCallback reportProgress = null)
+        /// <param name="shouldIgnoreFile">Returns true if a file should be ignored.</param>
+        public static FileHashSet Generate(string sourceFolder, Events.ProgressCallback reportProgress = null, Events.ShouldDeleteFileCallback shouldIgnoreFile = null)
         {
             sourceFolder    = Path.GetFullPath(sourceFolder);
             var sourceFiles = Directory.GetFiles(sourceFolder, "*.*", SearchOption.AllDirectories);
@@ -95,6 +96,10 @@ namespace Sewer56.DeltaPatchGenerator.Lib
                 var sourceFile   = sourceFiles[x];
                 var relativePath = Paths.GetRelativePath(sourceFile, sourceFolder);
                 reportProgress?.Invoke(relativePath, (double)x / sourceFiles.Length);
+                
+                // Conditionally ignore file.
+                if (shouldIgnoreFile != null && shouldIgnoreFile(relativePath))
+                    continue;
 
                 var hash = Hashing.CalculateHash(sourceFile);
                 hashSet.Files.Add(new FileHashEntry()
