@@ -86,5 +86,20 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
             foreach (var item in AddedFilesSet)
                 FilePathSet.Add(item);
         }
+
+        public FileHashSet ToFileHashSet()
+        {
+            var result = new FileHashSet();
+            foreach (var dictItem in HashToPatchDictionary)
+            {
+                result.Files.Add(new FileHashEntry()
+                {
+                    Hash = dictItem.Key,
+                    RelativePath = dictItem.Value
+                });
+            }
+
+            return result;
+        }
     }
 }
