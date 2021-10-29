@@ -17,7 +17,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
         /// <param name="seed">The seed to use for hashing.</param>
         public static ulong CalculateHash(string filePath, ulong seed = 0)
         {
-            using var fileStream = new FileStream(filePath, FileMode.Open);
+            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             return xxHash64.ComputeHash(fileStream, HashBufferSize, seed);
         }
     }
