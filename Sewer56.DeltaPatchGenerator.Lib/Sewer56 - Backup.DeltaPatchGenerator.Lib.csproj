@@ -5,14 +5,6 @@
     <LangVersion>preview</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PackageId>Sewer56.DeltaPatchGenerator</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Sewer56</Authors>
-    <Description>A simple folder based API for generating Delta compression based patches based on the VCDiff algorithm.</Description>
-    <PackageProjectUrl>https://github.com/Sewer56/Sewer56.DeltaPatchGenerator</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Sewer56/Sewer56.DeltaPatchGenerator</RepositoryUrl>
-    <PackageTags>vcdiff;delta;compression</PackageTags>
-    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
