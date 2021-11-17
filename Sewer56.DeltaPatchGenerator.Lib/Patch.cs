@@ -36,19 +36,31 @@ namespace Sewer56.DeltaPatchGenerator.Lib
         public static void Apply(Span<PatchData> patches, string sourceFolder, string outputFolder, Events.ProgressCallback reportProgress = null, bool copySourceToOutput = false)
         {
             bool extractToSource   = sourceFolder.Equals(outputFolder, StringComparison.OrdinalIgnoreCase);
-            string actualOutFolder = extractToSource ? Paths.TempFolder : outputFolder;
+            TemporaryFolderAllocation alloc = null;
 
-            if (extractToSource)
-                IOEx.TryEmptyDirectory(actualOutFolder);
-            else if (copySourceToOutput)
-                IOEx.CopyDirectory(sourceFolder, actualOutFolder);
-
-            Apply_Internal(patches, sourceFolder, actualOutFolder, reportProgress);
-
-            if (extractToSource)
+            try
             {
-                IOEx.MoveDirectory(actualOutFolder, sourceFolder);
-                IOEx.TryDeleteDirectory(actualOutFolder);
+                if (extractToSource)
+                    alloc = new TemporaryFolderAllocation();
+
+                string actualOutFolder = extractToSource ? alloc.FolderPath : outputFolder;
+
+                if (extractToSource)
+                    IOEx.TryEmptyDirectory(actualOutFolder);
+                else if (copySourceToOutput)
+                    IOEx.CopyDirectory(sourceFolder, actualOutFolder);
+
+                Apply_Internal(patches, sourceFolder, actualOutFolder, reportProgress);
+
+                if (extractToSource)
+                {
+                    IOEx.MoveDirectory(actualOutFolder, sourceFolder);
+                    IOEx.TryDeleteDirectory(actualOutFolder);
+                }
+            }
+            finally
+            {
+                alloc?.Dispose();
             }
         }
         

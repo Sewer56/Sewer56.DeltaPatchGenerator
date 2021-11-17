@@ -15,11 +15,6 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
         public static readonly string ProgramFolder = Path.GetDirectoryName(new Uri(AppContext.BaseDirectory).LocalPath);
 
         /// <summary>
-        /// Location of the temp folder; where working files are stored.
-        /// </summary>
-        public static readonly string TempFolder    = Path.Combine(ProgramFolder, "Temp");
-
-        /// <summary>
         /// Retrieves a relative path for a file given a folder name.
         /// </summary>
         /// <param name="fullPath">Full path for the file.</param>
