@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Sewer56.DeltaPatchGenerator.Lib.Utility;
 
 namespace Sewer56.DeltaPatchGenerator.Lib.Model
 {
@@ -26,6 +28,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
             var text    = File.ReadAllText(path);
             var hashSet = JsonSerializer.Deserialize<FileHashSet>(text);
             hashSet.Directory = inputFolder;
+            hashSet.Initialise();
             return hashSet;
         }
 
@@ -33,6 +36,20 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
         {
             outputFileName = Path.Combine(outputFolder, FileName);
             File.WriteAllText(outputFileName, JsonSerializer.Serialize(this));
+        }
+
+        private void Initialise()
+        {
+            // Patch for OS with forward slash separators.
+            if (!Paths.UsesForwardSlashSeparator) 
+                return;
+
+            for (int x = 0; x < Files.Count; x++)
+            {
+                var file = Files[x];
+                file.RelativePath = file.RelativePath.UsingForwardSlash();
+                Files[x] = file;
+            }
         }
     }
 

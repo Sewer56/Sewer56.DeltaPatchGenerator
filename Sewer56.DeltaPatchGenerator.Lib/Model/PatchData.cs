@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Sewer56.DeltaPatchGenerator.Lib.Utility;
 
 namespace Sewer56.DeltaPatchGenerator.Lib.Model
 {
@@ -80,6 +82,21 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
             if (FilePathSet.Count != 0) 
                 return;
 
+            // Linux & OSX. Enforce forward slash if patch was made on Windows.
+            if (Paths.UsesForwardSlashSeparator)
+            {
+                foreach (var dictEntry in HashToPatchDictionary)
+                    HashToPatchDictionary[dictEntry.Key] = dictEntry.Value.UsingForwardSlashIfNecessary();
+
+                var allAddedFiles = AddedFilesSet.ToArray();
+                foreach (var addedFile in allAddedFiles)
+                {
+                    AddedFilesSet.Remove(addedFile);
+                    AddedFilesSet.Add(addedFile.UsingForwardSlashIfNecessary());
+                }
+            }
+
+            // Add to file path set.
             foreach (var item in HashToPatchDictionary)
                 FilePathSet.Add(item.Value);
 

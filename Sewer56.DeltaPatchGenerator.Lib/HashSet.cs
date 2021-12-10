@@ -31,6 +31,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib
         /// <param name="shouldDeleteFile">Allows you to override whether the file should be deleted.</param>
         public static void Cleanup(FileHashSet fileSet, string sourceFolder, Events.ShouldDeleteFileCallback shouldDeleteFile)
         {
+            sourceFolder = Path.GetFullPath(sourceFolder);
             var allFiles = Directory.GetFiles(sourceFolder, "*.*", SearchOption.AllDirectories);
             var hashSet  = BuildHashSet(fileSet);
 
@@ -53,6 +54,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib
         /// <returns></returns>
         public static bool Verify(FileHashSet fileSet, string sourceFolder, out List<string> missingFiles, out List<string> hashMismatchFiles, Events.ProgressCallback reportProgress = null)
         {
+            sourceFolder      = Path.GetFullPath(sourceFolder);
             missingFiles      = new List<string>();
             hashMismatchFiles = new List<string>();
 

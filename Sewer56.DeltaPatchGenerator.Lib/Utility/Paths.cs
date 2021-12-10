@@ -27,5 +27,30 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Utility
         /// <param name="relativePath">Relative path to the folder.</param>
         /// <param name="folderPath">Path to the folder.</param>
         public static string AppendRelativePath(string relativePath, string folderPath) => folderPath + "/" + relativePath;
+
+        /// <summary>
+        /// True if uses *nix path separator.
+        /// </summary>
+        public static bool UsesForwardSlashSeparator = Path.DirectorySeparatorChar == '/';
+
+        /// <summary>
+        /// Replaces the path separator if required.
+        /// </summary>
+        /// <param name="path">The path where the separator should be replaced.</param>
+        /// <returns>Same or new path.</returns>
+        public static string UsingForwardSlashIfNecessary(this string path)
+        {
+            return UsesForwardSlashSeparator ? path.UsingForwardSlash() : path;
+        }
+
+        /// <summary>
+        /// Replaces the path separator from a backslash to a forward slash.
+        /// </summary>
+        /// <param name="path">The path where the separator should be replaced.</param>
+        /// <returns>Path with backslashes separated with forward.</returns>
+        public static string UsingForwardSlash(this string path)
+        {
+            return path.Replace('\\', '/');
+        }
     }
 }
