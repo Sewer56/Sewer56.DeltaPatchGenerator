@@ -3,12 +3,15 @@ using Standart.Hash.xxHash;
 
 namespace Sewer56.DeltaPatchGenerator.Lib.Utility
 {
+    /// <summary>
+    /// Utilities for providing an improved hashing experience.
+    /// </summary>
     public static class Hashing
     {
         /// <summary>
         /// Max buffer size for calculating hashes.
         /// </summary>
-        public const int HashBufferSize = 64_000_000; // 64 MB
+        public const int HashBufferSize = 1_000_000; // 1 MB
 
         /// <summary>
         /// Calculates the hash for a file from a given filepath.
