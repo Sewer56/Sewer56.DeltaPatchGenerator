@@ -85,7 +85,7 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model
             // Linux & OSX. Enforce forward slash if patch was made on Windows.
             if (Paths.UsesForwardSlashSeparator)
             {
-                foreach (var dictEntry in HashToPatchDictionary)
+                foreach (var dictEntry in HashToPatchDictionary.ToArray())
                     HashToPatchDictionary[dictEntry.Key] = dictEntry.Value.UsingForwardSlashIfNecessary();
 
                 var allAddedFiles = AddedFilesSet.ToArray();
