@@ -22,7 +22,7 @@ namespace Sewer56.DeltaPatchGenerator.Tests
             {
                 Directory.Delete(Assets.TempFolder, true);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 /* Ignore */
             }
@@ -111,6 +111,26 @@ namespace Sewer56.DeltaPatchGenerator.Tests
             Assert.False(HashSet.Verify(hashes, Assets.MismatchFolderTarget, out var missingFiles, out var hashMismatches));
             Assert.Single(hashMismatches);
             Assert.Empty(missingFiles);
+        }
+
+        [Fact]
+        public void PatchWithDuplicateHashes()
+        {
+            // Make Hashes and Patch
+            var hashes = HashSet.Generate(Assets.DuplicateHashesTarget);
+            var patch = Patch.Generate(Assets.DuplicateHashesOriginal, Assets.DuplicateHashesTarget, PatchFolder);
+
+            // Serialize and de-serialize to reset internal state
+            using var tempDir = new TemporaryFolderAllocation();
+            patch.ToDirectory(tempDir.FolderPath, out var filePath);
+            patch = PatchData.FromDirectory(tempDir.FolderPath);
+
+            // Apply Patch
+            patch.Directory = PatchFolder;
+            Patch.Apply(patch, Assets.DuplicateHashesOriginal, ResultFolder);
+
+            // Verify Files
+            Assert.True(HashSet.Verify(hashes, ResultFolder, out var missingFiles, out var hashMismatches));
         }
     }
 }

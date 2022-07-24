@@ -26,7 +26,11 @@ namespace Sewer56.DeltaPatchGenerator.Tests
         public static readonly string AddMissingFileFolder = Path.Combine(AssetsFolder, "Add Missing File Test");
         public static readonly string AddMissingFileFolderOriginal = Path.Combine(AddMissingFileFolder, "Original");
         public static readonly string AddMissingFileFolderTarget = Path.Combine(AddMissingFileFolder, "New");
-        
+
+        public static readonly string DuplicateHashesFolder = Path.Combine(AssetsFolder, "Duplicate Hash Test");
+        public static readonly string DuplicateHashesOriginal = Path.Combine(DuplicateHashesFolder, "Original");
+        public static readonly string DuplicateHashesTarget = Path.Combine(DuplicateHashesFolder, "Target");
+
         public static readonly string TempFolder = Path.Combine(Paths.ProgramFolder, "Temp");
 
         static Assets()
