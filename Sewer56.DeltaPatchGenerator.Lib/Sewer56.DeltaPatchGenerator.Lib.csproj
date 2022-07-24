@@ -5,7 +5,7 @@
     <LangVersion>preview</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PackageId>Sewer56.DeltaPatchGenerator</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <Authors>Sewer56</Authors>
     <Description>A simple folder based API for generating Delta compression based patches based on the VCDiff algorithm.</Description>
     <PackageProjectUrl>https://github.com/Sewer56/Sewer56.DeltaPatchGenerator</PackageProjectUrl>
@@ -18,7 +18,15 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsTrimmable>true</IsTrimmable>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Sewer56.VCDiff" Version="3.4.0" />
