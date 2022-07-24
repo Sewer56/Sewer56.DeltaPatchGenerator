@@ -92,19 +92,24 @@ public class PatchData
     public void ToDirectory(string outputFolder, out string outputFilePath)
     {
         outputFilePath = Path.Combine(outputFolder, FileName);
-        var originalDuplicatePatch = DuplicateHashToPatchDictionary;
+        var originalDuplPatch = DuplicateHashToPatchDictionary;
+        var originalHashToPatch = HashToPatchDictionary;
+        var originalAddedFilesSet = AddedFilesSet;
+
         try
         {
-            // Set duplicate patches to null if not present
-            // (common case), to avoid needless serialization.
-            if (DuplicateHashToPatchDictionary.Count <= 0)
-                DuplicateHashToPatchDictionary = null;
+            // Set properties to null to remove them from serializer output (if needed).
+            if (DuplicateHashToPatchDictionary.Count <= 0) DuplicateHashToPatchDictionary = null;
+            if (HashToPatchDictionary.Count <= 0) HashToPatchDictionary = null;
+            if (AddedFilesSet.Count <= 0) AddedFilesSet = null;
 
             File.WriteAllText(outputFilePath, JsonSerializer.Serialize(this, _options));
         }
         finally
         {
-            DuplicateHashToPatchDictionary = originalDuplicatePatch;
+            DuplicateHashToPatchDictionary = originalDuplPatch;
+            HashToPatchDictionary = originalHashToPatch;
+            AddedFilesSet = originalAddedFilesSet;
         }
     }
 
