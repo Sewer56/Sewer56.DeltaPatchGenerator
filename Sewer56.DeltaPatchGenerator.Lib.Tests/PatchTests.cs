@@ -22,7 +22,7 @@ namespace Sewer56.DeltaPatchGenerator.Tests
             {
                 Directory.Delete(Assets.TempFolder, true);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 /* Ignore */
             }
