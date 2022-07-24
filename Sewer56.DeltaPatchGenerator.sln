@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sewer56.DeltaPatchGenerator
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sewer56.DeltaPatchGenerator.Lib", "Sewer56.DeltaPatchGenerator.Lib\Sewer56.DeltaPatchGenerator.Lib.csproj", "{92291413-6C36-4DB1-80EF-61EAC9BCC07D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Trimming", "Trimming", "{12C5C721-CA50-405B-B1FE-403AB7682142}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trimming.Dummy", "Trimming\Trimming.Dummy\Trimming.Dummy.csproj", "{14031A60-C079-416F-8996-D1A5C001828B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{92291413-6C36-4DB1-80EF-61EAC9BCC07D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92291413-6C36-4DB1-80EF-61EAC9BCC07D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92291413-6C36-4DB1-80EF-61EAC9BCC07D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14031A60-C079-416F-8996-D1A5C001828B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14031A60-C079-416F-8996-D1A5C001828B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14031A60-C079-416F-8996-D1A5C001828B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14031A60-C079-416F-8996-D1A5C001828B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{14031A60-C079-416F-8996-D1A5C001828B} = {12C5C721-CA50-405B-B1FE-403AB7682142}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6898F0CD-6F51-46F3-ACFD-DD527FCB83D9}

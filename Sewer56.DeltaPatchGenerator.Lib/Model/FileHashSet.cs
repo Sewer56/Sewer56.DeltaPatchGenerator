@@ -3,6 +3,9 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Sewer56.DeltaPatchGenerator.Lib.Utility;
+#if NET5_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
 
 namespace Sewer56.DeltaPatchGenerator.Lib.Model;
 
@@ -32,6 +35,9 @@ public class FileHashSet
     /// </summary>
     /// <param name="inputFolder">The folder from which the patch should be read.</param>
     /// <returns>Patched.</returns>
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Type is preserved in module initializer.")]
+#endif
     public static FileHashSet FromDirectory(string inputFolder)
     {
         var path    = Path.Combine(inputFolder, FileName);
@@ -47,6 +53,9 @@ public class FileHashSet
     /// </summary>
     /// <param name="outputFolder">The folder where the hash set should be output.</param>
     /// <param name="outputPath">The file path where the hash set was output.</param>
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Type is preserved in module initializer.")]
+#endif
     public void ToDirectory(string outputFolder, out string outputPath)
     {
         outputPath = Path.Combine(outputFolder, FileName);

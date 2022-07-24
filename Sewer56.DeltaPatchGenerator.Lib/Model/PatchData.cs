@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Sewer56.DeltaPatchGenerator.Lib.Utility;
+#if NET5_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
 
 namespace Sewer56.DeltaPatchGenerator.Lib.Model;
 
@@ -74,6 +77,9 @@ public class PatchData
     /// </summary>
     /// <param name="inputFolder">The folder containing the patch file.</param>
     /// <returns>The patch information.</returns>
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Type is preserved in module initializer.")]
+#endif
     public static PatchData FromDirectory(string inputFolder)
     {
         var path  = Path.Combine(inputFolder, FileName);
@@ -89,6 +95,9 @@ public class PatchData
     /// </summary>
     /// <param name="outputFolder">The folder where the patch data should be saved.</param>
     /// <param name="outputFilePath">The file path where.</param>
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Type is preserved in module initializer.")]
+#endif
     public void ToDirectory(string outputFolder, out string outputFilePath)
     {
         outputFilePath = Path.Combine(outputFolder, FileName);
