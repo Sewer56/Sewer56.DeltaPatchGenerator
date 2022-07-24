@@ -190,6 +190,16 @@ public class PatchData
             });
         }
 
+        foreach (var dictItem in DuplicateHashToPatchDictionary)
+        foreach (var duplicatePath in dictItem.Value)
+        {
+            result.Files.Add(new FileHashEntry()
+            {
+                Hash = dictItem.Key,
+                RelativePath = duplicatePath
+            });
+        }
+
         return result;
     }
 
