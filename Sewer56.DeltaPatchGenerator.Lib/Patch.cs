@@ -195,7 +195,7 @@ public static class Patch
             hash ??= Hashing.CalculateHash(sourceFilePath);
 
             // Check if file hash is present.
-            if (!patch.HashToPatchDictionary.TryGetValue(hash.Value, out var expectedRelativePath))
+            if (!patch.HashToPatchDictionary.TryGetValue(hash.Value, out _))
                 continue;
 
             patchData = patch;

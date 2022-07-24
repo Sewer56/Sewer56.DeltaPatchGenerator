@@ -126,6 +126,7 @@ namespace Sewer56.DeltaPatchGenerator.Tests
             patch = PatchData.FromDirectory(tempDir.FolderPath);
 
             // Apply Patch
+            patch.Directory = PatchFolder;
             Patch.Apply(patch, Assets.DuplicateHashesOriginal, ResultFolder);
 
             // Verify Files

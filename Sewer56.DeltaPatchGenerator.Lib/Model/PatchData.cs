@@ -13,6 +13,11 @@ namespace Sewer56.DeltaPatchGenerator.Lib.Model;
 /// </summary>
 public class PatchData
 {
+    private static JsonSerializerOptions _options = new JsonSerializerOptions(JsonSerializerDefaults.General)
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+    };
+
     /// <summary>
     /// Standard filename used for patch data.
     /// </summary>
@@ -22,6 +27,16 @@ public class PatchData
     /// Dictionary matching individual patches to hashes.
     /// </summary>
     public Dictionary<ulong, string> HashToPatchDictionary { get; set; } = new Dictionary<ulong, string>();
+
+    /// <summary>
+    /// Dictionary containing additional patches for a given hash not specified in <see cref="HashToPatchDictionary"/>.  
+    /// </summary>
+    /// <remarks>
+    ///     This property exists for backwards compatibility and space saving reasons.
+    ///     Backwards compatibility, as to not break older library versions expecting a mapping to string in <see cref="HashToPatchDictionary"/>.
+    ///     Space saving, as multiple files for single hash is uncommon, and wastes space in resulting JSON file.
+    /// </remarks>
+    public Dictionary<ulong, List<string>> DuplicateHashToPatchDictionary { get; set; } = new Dictionary<ulong, List<string>>();
 
     /// <summary>
     /// Contains a set of all files to be added to patch from old to new.
@@ -63,7 +78,7 @@ public class PatchData
     {
         var path  = Path.Combine(inputFolder, FileName);
         var text  = File.ReadAllText(path);
-        var patch = JsonSerializer.Deserialize<PatchData>(text);
+        var patch = JsonSerializer.Deserialize<PatchData>(text, _options);
         patch!.Initialize(inputFolder);
 
         return patch;
@@ -77,7 +92,20 @@ public class PatchData
     public void ToDirectory(string outputFolder, out string outputFilePath)
     {
         outputFilePath = Path.Combine(outputFolder, FileName);
-        File.WriteAllText(outputFilePath, JsonSerializer.Serialize(this));
+        var originalDuplicatePatch = DuplicateHashToPatchDictionary;
+        try
+        {
+            // Set duplicate patches to null if not present
+            // (common case), to avoid needless serialization.
+            if (DuplicateHashToPatchDictionary.Count <= 0)
+                DuplicateHashToPatchDictionary = null;
+
+            File.WriteAllText(outputFilePath, JsonSerializer.Serialize(this, _options));
+        }
+        finally
+        {
+            DuplicateHashToPatchDictionary = originalDuplicatePatch;
+        }
     }
 
     /// <summary>
@@ -87,7 +115,11 @@ public class PatchData
     /// <param name="path">Relative path of the file.</param>
     public void AddPatchFile(ulong hash, string path)
     {
-        HashToPatchDictionary[hash] = path;
+        if (HashToPatchDictionary.ContainsKey(hash))
+            GetOrCreateDuplicateDictionaryList(hash).Add(path);
+        else
+            HashToPatchDictionary[hash] = path;
+
         FilePathSet.Add(path);
     }
 
@@ -130,6 +162,10 @@ public class PatchData
         foreach (var item in HashToPatchDictionary)
             FilePathSet.Add(item.Value);
 
+        foreach (var item in DuplicateHashToPatchDictionary)
+        foreach (var file in item.Value)
+            FilePathSet.Add(file);
+
         foreach (var item in AddedFilesSet)
             FilePathSet.Add(item);
     }
@@ -150,5 +186,16 @@ public class PatchData
         }
 
         return result;
+    }
+
+    private List<string> GetOrCreateDuplicateDictionaryList(ulong hash)
+    {
+        if (!DuplicateHashToPatchDictionary.TryGetValue(hash, out var list))
+        {
+            list = new List<string>();
+            DuplicateHashToPatchDictionary[hash] = list;
+        }
+
+        return list;
     }
 }
